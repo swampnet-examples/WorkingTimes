@@ -5,6 +5,6 @@ namespace WorkingTimes
 {
     public interface IWorkingTimes
     {
-        IEnumerable<WorkDay> GetWorkingDays(DateTime start, DateTime end);
+        IEnumerable<WorkDay> GetWorkingTimes(DateTime start, DateTime end);
     }
 }

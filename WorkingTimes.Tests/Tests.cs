@@ -76,7 +76,7 @@ namespace WorkingTimes.Tests
 
         class MockedWorkingTimes : IWorkingTimes
         {
-            public IEnumerable<WorkDay> GetWorkingDays(DateTime start, DateTime end)
+            public IEnumerable<WorkDay> GetWorkingTimes(DateTime start, DateTime end)
             {
                 var workDays = new List<WorkDay>();
 
