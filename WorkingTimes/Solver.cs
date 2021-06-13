@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -7,32 +6,8 @@ using System.Threading.Tasks;
 
 namespace WorkingTimes
 {
-    public interface IWorkingTimes
-    {
-        IEnumerable<WorkDay> GetWorkingDays(DateTime start, DateTime end);
-    }
-
-
-    /// <summary>
-    /// Local time
-    /// </summary>
-    public class WorkDay
-    {
-        // Start of workingday
-        public DateTime Start { get; set; }
-
-        // End of working day
-        public DateTime End { get; set; }
-    }
-
-
     public class Solver
     {
-        /*
-         * Edge cases:
-         * Starts on a non working day
-         * Ends on a non working day
-         */
         /// <summary>
         /// 
         /// </summary>
@@ -46,7 +21,7 @@ namespace WorkingTimes
                 throw new InvalidOperationException($"End date ({end}) must come after start date ({start})");
             }
             
-            double minuets = 0;
+            double minutes = 0;
 
             // Get all valid working days between the two dates
             var workingTimes = workingtimes.GetWorkingDays(start, end);
@@ -70,12 +45,12 @@ namespace WorkingTimes
 
                     Debug.WriteLine($"[{day:yyyy MMM dd}] {startTime} {endTime} ({timeWorked})");
 
-                    minuets += timeWorked.TotalMinutes;
+                    minutes += timeWorked.TotalMinutes;
                 }
                 day = day.AddDays(1);
             }
 
-            return minuets;
+            return minutes;
         }
     }
 }
