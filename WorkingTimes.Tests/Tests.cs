@@ -1,6 +1,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using WorkingTimes;
 
 namespace WorkingTimes.Tests
 {
@@ -32,6 +34,7 @@ namespace WorkingTimes.Tests
             var expected = 900;
             Assert.AreEqual(expected, actual);
         }
+
 
         [TestMethod]
         public void StartOnNonWorkingDay()
@@ -78,25 +81,14 @@ namespace WorkingTimes.Tests
         {
             public IEnumerable<WorkDay> GetWorkingTimes(DateTime start, DateTime end)
             {
-                var workDays = new List<WorkDay>();
+                var dayStart = TimeSpan.Parse("08:00:00");
+                var dayEnd = TimeSpan.Parse("17:00:00");
 
-                var day = start.Date;
-
-                while(day < end)
-                {
-                    if(day.DayOfWeek != DayOfWeek.Saturday && day.DayOfWeek != DayOfWeek.Sunday)
-                    {
-                        workDays.Add(new WorkDay()
-                        {
-                            Start = new DateTime(day.Year, day.Month, day.Day, 08, 0, 0),
-                            End = new DateTime(day.Year, day.Month, day.Day, 17, 0, 0)
-                        });
-                    }
-
-                    day = day.AddDays(1);
-                }
-
-                return workDays;
+                return Enumerable.Range(0, 1 + end.Subtract(start).Days)
+                    .Select(offset => start.AddDays(offset))
+                    .FilterWeekends()
+                    .ToWorkDays(dayStart ,dayEnd)
+                    ;
             }
         }
     }
