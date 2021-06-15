@@ -24,7 +24,7 @@ namespace WorkingTimes
             double minutes = 0;
 
             // Get all valid working days between the two dates
-            var workingTimes = workingtimes.GetWorkingTimes(start, end);
+            var workingTimes = workingtimes.GetWorkDays(start, end);
             var day = start.Date;
 
             while(day < end)
