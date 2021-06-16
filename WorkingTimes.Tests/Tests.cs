@@ -13,11 +13,10 @@ namespace WorkingTimes.Tests
         public void SameDay()
         {
             var workingTimes = new MockedWorkingTimes();
-            var solver = new Solver();
             var start = DateTime.Parse("2021-06-04 10:00");
             var end = DateTime.Parse("2021-06-04 16:00");
-            var actual = solver.Solve(workingTimes, start, end);
-            var expected = 6*60;
+            var actual = workingTimes.CalculateTimeSpan(start, end);
+            var expected = TimeSpan.FromMinutes(6*60);
             Assert.AreEqual(expected, actual);
         }
 
@@ -27,11 +26,10 @@ namespace WorkingTimes.Tests
         public void Weekend()
         {
             var workingTimes = new MockedWorkingTimes();
-            var solver = new Solver();
             var start = DateTime.Parse("2021-06-04 10:00");
             var end = DateTime.Parse("2021-06-07 16:00");
-            var actual = solver.Solve(workingTimes, start, end);
-            var expected = 900;
+            var actual = workingTimes.CalculateTimeSpan(start, end);
+            var expected = TimeSpan.FromMinutes(900);
             Assert.AreEqual(expected, actual);
         }
 
@@ -40,11 +38,10 @@ namespace WorkingTimes.Tests
         public void StartOnNonWorkingDay()
         {
             var workingTimes = new MockedWorkingTimes();
-            var solver = new Solver();
             var start = DateTime.Parse("2021-06-05 10:00");    // Saturday (Non working day)
             var end = DateTime.Parse("2021-06-07 16:00");
-            var actual = solver.Solve(workingTimes, start, end);
-            var expected = 8 * 60;                          // 08:00 - 16:00 on the Monday 2021-06-07
+            var actual = workingTimes.CalculateTimeSpan(start, end);
+            var expected = TimeSpan.FromMinutes(8 * 60);                          // 08:00 - 16:00 on the Monday 2021-06-07
             Assert.AreEqual(expected, actual);
         }
 
@@ -53,11 +50,10 @@ namespace WorkingTimes.Tests
         public void EndOnNonWorkingDay()
         {
             var workingTimes = new MockedWorkingTimes();
-            var solver = new Solver();
             var start = DateTime.Parse("2021-06-04 10:00");
             var end = DateTime.Parse("2021-06-05 16:00");   // Saturday (Non working day)
-            var actual = solver.Solve(workingTimes, start, end);
-            var expected = 7 * 60;                          // 17:00 on the Friday 2021-06-04
+            var actual = workingTimes.CalculateTimeSpan(start, end);
+            var expected = TimeSpan.FromMinutes(7 * 60);                          // 17:00 on the Friday 2021-06-04
             Assert.AreEqual(expected, actual);
         }
 
@@ -66,13 +62,12 @@ namespace WorkingTimes.Tests
         public void CoupleOfWeeks()
         {
             var workingTimes = new MockedWorkingTimes();
-            var solver = new Solver();
             var start = DateTime.Parse("2021-06-04 10:00");
             var end = DateTime.Parse("2021-07-06 16:00");
-            var actual = solver.Solve(workingTimes, start, end);
+            var actual = workingTimes.CalculateTimeSpan(start, end);
 
             // 20 Working days + 7 hours
-            var expected = 12240;
+            var expected = TimeSpan.FromMinutes(12240);
             Assert.AreEqual(expected, actual);
         }
 
@@ -80,17 +75,16 @@ namespace WorkingTimes.Tests
         public void MidweekHoliday()
         {
             var workingTimes = new MockedWorkingTimes();
-            var solver = new Solver();
             var start = DateTime.Parse("2021-03-01 13:00"); // Monday
             var end = DateTime.Parse("2021-03-05 16:00");   // Friday
-            var actual = solver.Solve(workingTimes, start, end);
+            var actual = workingTimes.CalculateTimeSpan(start, end);
 
             // Mon  1300-1700   4
             // Tue  0800-1700   9
             // Wed  HOLIDAY
             // Thu  HOLIDAY
             // Fri  0800-1600   8
-            var expected = 21*60;
+            var expected = TimeSpan.FromMinutes(21 *60);
             Assert.AreEqual(expected, actual);
         }
 
