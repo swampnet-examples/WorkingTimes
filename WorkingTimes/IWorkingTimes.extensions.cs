@@ -16,7 +16,7 @@ namespace WorkingTimes
                 throw new InvalidOperationException($"End date ({end}) must come after start date ({start})");
             }
 
-            double minutes = 0;
+            var ts = TimeSpan.Zero;
 
             // Get all valid working days between the two dates
             var workingTimes = wt.GetWorkDays(start, end);
@@ -38,14 +38,14 @@ namespace WorkingTimes
 
                     var timeWorked = endTime - startTime;
 
-                    Debug.WriteLine($"[{day:yyyy MMM dd}] {startTime} {endTime} ({timeWorked})");
+                    ts += timeWorked;
 
-                    minutes += timeWorked.TotalMinutes;
+                    Debug.WriteLine($"[{day:yyyy MMM dd}] {startTime} {endTime} (day: {timeWorked} - total: {ts})");
                 }
                 day = day.AddDays(1);
             }
 
-            return TimeSpan.FromMinutes(minutes);
+            return ts;
         }
     }
 }
