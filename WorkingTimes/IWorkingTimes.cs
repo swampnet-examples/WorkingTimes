@@ -15,6 +15,6 @@ namespace WorkingTimes
         /// <param name="start"></param>
         /// <param name="end"></param>
         /// <returns></returns>
-        IEnumerable<WorkDay> GetWorkDays(DateTime start, DateTime end);
+        IEnumerable<WorkDay> GetWorkDays(DateTime start, DateTime end, object context = null);
     }
 }

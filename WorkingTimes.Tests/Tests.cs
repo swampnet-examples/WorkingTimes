@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using WorkingTimes;
 
@@ -89,15 +90,30 @@ namespace WorkingTimes.Tests
         }
 
 
+
         class MockedWorkingTimes : IWorkingTimes
         {
             // Mock some working times
             // Normally this will be hitting the db / whatever to get working days / bank holidays whatever.
             // Just do weekends and a made up mid-week bank holiday in March
-            public IEnumerable<WorkDay> GetWorkDays(DateTime start, DateTime end)
+            //
+            // 'context' here is if we need to pass in bespoke data that we might need to calculate this
+            //  - eg, It's very possible that we might calculate working times differnt based on department (different
+            //        hours almost certainly) this allows us to pass in anything we might need to determine that.
+            //
+            //      - Would we be better off passing in dayStart / dayEnd here?
+            //          Torn. Implementing IWorkingTimes is responsibility of consumer so it's reasonable to expect
+            //                it to implement business rules.
+            public IEnumerable<WorkDay> GetWorkDays(DateTime start, DateTime end, object context)
             {
-                var dayStart = TimeSpan.Parse("08:00:00");
-                var dayEnd = TimeSpan.Parse("17:00:00");
+                // dept-01: 0800-1700
+                // dept-02: 0600-2200
+                var dept = (context as string) ?? "dept-01";
+
+                var dayStart = dept == "dept-01" ? TimeSpan.Parse("08:00:00") : TimeSpan.Parse("06:00:00");
+                var dayEnd = dept == "dept-01" ? TimeSpan.Parse("17:00:00") : TimeSpan.Parse("22:00:00");
+
+                Debug.WriteLine($"Calculating work days for '{dept}' ({dayStart}-{dayEnd})");
 
                 return Enumerable.Range(0, 1 + end.Subtract(start).Days)
                     .Select(offset => start.AddDays(offset))
