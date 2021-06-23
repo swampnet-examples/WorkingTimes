@@ -9,7 +9,7 @@ namespace WorkingTimes
 {
     public static class IWorkingTimesExtensions
     {
-        public static TimeSpan CalculateTimeSpan(this IWorkingTimes wt, DateTime start, DateTime end)
+        public static TimeSpan CalculateTimeSpan(this IWorkingTimes wt, DateTime start, DateTime end, object context = null)
         {
             if (end < start)
             {
@@ -19,21 +19,33 @@ namespace WorkingTimes
             var ts = TimeSpan.Zero;
 
             // Get all valid working days between the two dates
-            var workingTimes = wt.GetWorkDays(start, end);
+            var workingTimes = wt.GetWorkDays(start, end, context);
             var day = start.Date;
 
             while (day < end)
             {
-                var workingDay = workingTimes.SingleOrDefault(wt => wt.Start.Date == day);
+                var workingDay = workingTimes.SingleOrDefault(t => t.Start.Date == day);
                 if (workingDay != null)
                 {
                     // Calculate the days start / end time
                     var startTime = day.Date == start.Date
-                        ? start.TimeOfDay
+                        // Start day. Clamp start time
+                        ? start.TimeOfDay > workingDay.End.TimeOfDay
+                            ? workingDay.End.TimeOfDay
+                            : start.TimeOfDay < workingDay.Start.TimeOfDay
+                                ? workingDay.Start.TimeOfDay
+                                : start.TimeOfDay
+
                         : workingDay.Start.TimeOfDay;
 
                     var endTime = day.Date == end.Date
-                        ? end.TimeOfDay
+                        // End day. Clamp end time
+                        ? end.TimeOfDay < workingDay.Start.TimeOfDay
+                            ? workingDay.Start.TimeOfDay
+                            : end.TimeOfDay > workingDay.End.TimeOfDay
+                                ? workingDay.End.TimeOfDay
+                                : end.TimeOfDay
+
                         : workingDay.End.TimeOfDay;
 
                     var timeWorked = endTime - startTime;

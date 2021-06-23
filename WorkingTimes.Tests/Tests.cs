@@ -17,7 +17,7 @@ namespace WorkingTimes.Tests
             var start = DateTime.Parse("2021-06-04 10:00");
             var end = DateTime.Parse("2021-06-04 16:00");
             var actual = workingTimes.CalculateTimeSpan(start, end);
-            var expected = TimeSpan.FromMinutes(6*60);
+            var expected = TimeSpan.FromMinutes(6 * 60);
             Assert.AreEqual(expected, actual);
         }
 
@@ -85,10 +85,79 @@ namespace WorkingTimes.Tests
             // Wed  HOLIDAY
             // Thu  HOLIDAY
             // Fri  0800-1600   8
-            var expected = TimeSpan.FromMinutes(21 *60);
+            var expected = TimeSpan.FromMinutes(21 * 60);
             Assert.AreEqual(expected, actual);
         }
 
+
+        [TestMethod]
+        public void StartTime_Later_Than_WorkingDay_StartTime()
+        {
+            var workingTimes = new MockedWorkingTimes();
+
+            var start = DateTime.Parse("2021-06-22 20:16"); // Tuesday, but outside working hours
+            var end = DateTime.Parse("2021-06-23 08:40");   // Wednesday
+            var actual = workingTimes.CalculateTimeSpan(start, end, "dept-02");
+
+            // Should just be the 40 minutes on the Wednesday
+            var expected = TimeSpan.FromMinutes(40);
+
+            Assert.AreEqual(expected, actual);
+
+
+            start = DateTime.Parse("2021-06-22 20:16"); // Tuesday, but outside working hours
+            end = DateTime.Parse("2021-06-23 07:40");   // Wednesday, but outside working hours
+            actual = workingTimes.CalculateTimeSpan(start, end, "dept-02");
+
+            expected = TimeSpan.Zero;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void EndTime_Earlier_Than_WorkingDay_StartTime()
+        {
+            var workingTimes = new MockedWorkingTimes();
+
+            var start = DateTime.Parse("2021-06-22 20:16"); // Tuesday, but outside working hours
+            var end = DateTime.Parse("2021-06-23 07:40");   // Wednesday, but outside working hours
+            var actual = workingTimes.CalculateTimeSpan(start, end, "dept-02");
+
+            var expected = TimeSpan.Zero;
+
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        public void StartTime_Earlier_Than_WorkingDay_StartTime()
+        {
+            var workingTimes = new MockedWorkingTimes();
+
+            var start = DateTime.Parse("2021-06-22 07:00"); // Tuesday, but outside working hours
+            var end = DateTime.Parse("2021-06-23 08:40");   // Wednesday, but outside working hours
+            var actual = workingTimes.CalculateTimeSpan(start, end, "dept-02");
+
+            // One full working day + 40 minutes
+            var expected = TimeSpan.FromMinutes((60 * 10) + 40);
+
+            Assert.AreEqual(expected, actual);
+        }
+
+
+        [TestMethod]
+        public void EndTime_Later_Than_WorkingDay_EndTime()
+        {
+            var workingTimes = new MockedWorkingTimes();
+
+            var start = DateTime.Parse("2021-06-22 07:00"); // Tuesday, but outside working hours
+            var end = DateTime.Parse("2021-06-23 20:40");   // Wednesday, but outside working hours
+            var actual = workingTimes.CalculateTimeSpan(start, end, "dept-02");
+
+            // Two full working days
+            var expected = TimeSpan.FromMinutes(60 * 20);
+
+            Assert.AreEqual(expected, actual);
+        }
 
 
         class MockedWorkingTimes : IWorkingTimes
@@ -110,19 +179,19 @@ namespace WorkingTimes.Tests
                 // dept-02: 0600-2200
                 var dept = (context as string) ?? "dept-01";
 
-                var dayStart = dept == "dept-01" ? TimeSpan.Parse("08:00:00") : TimeSpan.Parse("06:00:00");
-                var dayEnd = dept == "dept-01" ? TimeSpan.Parse("17:00:00") : TimeSpan.Parse("22:00:00");
+                var dayStart = dept == "dept-01" ? TimeSpan.Parse("08:00:00") : TimeSpan.Parse("08:00:00");
+                var dayEnd = dept == "dept-01" ? TimeSpan.Parse("17:00:00") : TimeSpan.Parse("18:00:00");
 
                 Debug.WriteLine($"Calculating work days for '{dept}' ({dayStart}-{dayEnd})");
 
-                return Enumerable.Range(0, 1 + end.Subtract(start).Days)
+                return Enumerable.Range(0, 1 + end.Date.Subtract(start.Date).Days)
                     .Select(offset => start.AddDays(offset))
                     .FilterWeekends()
                     .Filter(new[] {
                         DateTime.Parse("03 Mar 2021"), // Wednesday
                         DateTime.Parse("04 Mar 2021")  // Thursday 
                     })
-                    .ToWorkDays(dayStart ,dayEnd)
+                    .ToWorkDays(dayStart, dayEnd)
                     ;
             }
         }
