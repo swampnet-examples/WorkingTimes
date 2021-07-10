@@ -9,11 +9,18 @@ namespace WorkingTimes
 {
     public static class IWorkingTimesExtensions
     {
+        /// <summary>
+        /// Calclulate the amount of time between to given points, taking into account the values in IWorkingTimes
+        /// </summary>
         public static TimeSpan CalculateTimeSpan(this IWorkingTimes wt, DateTime start, DateTime end, object context = null)
         {
+            // If end/start, swap 'em over rather than throwing an exception.
             if (end < start)
             {
-                throw new InvalidOperationException($"End date ({end}) must come after start date ({start})");
+                var tmp = start;
+                start = end;
+                end = tmp;
+                //throw new InvalidOperationException($"End date ({end}) must come after start date ({start})");
             }
 
             var ts = TimeSpan.Zero;

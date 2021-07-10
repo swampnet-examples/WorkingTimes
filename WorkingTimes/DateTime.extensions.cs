@@ -5,8 +5,7 @@ using System.Linq;
 namespace WorkingTimes
 {
     /// <summary>
-    /// Some filter / projection extensions arount DateTime (well, IEnumerable DateTime really
-    /// 
+    /// Some filter / projection extensions around DateTime (well, IEnumerable DateTime really
     /// Try to adhere to deferred execution here, don't  actually materialise the dates unless we really have to.
     /// </summary>
     public static partial class DateTimeExtensions

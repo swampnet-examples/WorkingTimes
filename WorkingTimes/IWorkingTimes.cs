@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace WorkingTimes
 {
     /// <summary>
-    /// It's down to the client to supply this, although we will supply some helpefr methods to help build it.
+    /// It's down to the client to supply this, although we will supply some helper methods to help build it.
     /// Only the client knows what days/hours they work, and that could be different depending on department etc.
     /// </summary>
     public interface IWorkingTimes

@@ -36,6 +36,17 @@ namespace WorkingTimes.Tests
 
 
         [TestMethod]
+        public void Weekend_StartAfterEnd()
+        {
+            var workingTimes = new MockedWorkingTimes();
+            var start = DateTime.Parse("2021-06-07 16:00");
+            var end = DateTime.Parse("2021-06-04 10:00");
+            var actual = workingTimes.CalculateTimeSpan(start, end);
+            var expected = TimeSpan.FromMinutes(900);
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
         public void StartOnNonWorkingDay()
         {
             var workingTimes = new MockedWorkingTimes();
