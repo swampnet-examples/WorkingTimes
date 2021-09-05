@@ -170,6 +170,37 @@ namespace WorkingTimes.Tests
             Assert.AreEqual(expected, actual);
         }
 
+        [TestMethod]
+        public async Task SingleDay()
+        {
+            var workingTimes = new MockedWorkingTimes();
+
+            var start = DateTime.Parse("2021-06-22 07:00");
+            var end = start;
+
+            var actual = await workingTimes.GetWorkDaysAsync(start, end, "dept-2");
+
+            // a single working day
+            var expected = 1;
+
+            Assert.AreEqual(expected, actual.Count());
+        }
+
+
+        [TestMethod]
+        public async Task SingleDay_Weekend()
+        {
+            var workingTimes = new MockedWorkingTimes();
+
+            var start = DateTime.Parse("2021-06-19 07:00"); // Saturday
+            var end = start;
+
+            var actual = (await workingTimes.GetWorkDaysAsync(start, end, "dept-2")).SingleOrDefault();
+
+            // Not a working day
+            Assert.AreEqual(null, actual);
+        }
+
 
         class MockedWorkingTimes : IWorkingTimes
         {
